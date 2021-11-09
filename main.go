@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/jhunderdog/nmcoin/blockchain"
+	"github.com/jhunderdog/nmcoin/utils"
 )
 
 const port string = ":4000"
@@ -23,8 +26,12 @@ func (u URL) MarshalText() ([]byte, error) {
 type URLDescription struct {
 	URL         URL    `json:"url"`
 	Method      string `json:"method"`
-	Description string `json:"description`
+	Description string `json:"description"`
 	Payload     string `json:"payload,omitempty"`
+}
+
+type AddBlockBody struct {
+	Message string
 }
 
 // func (u URLDescription) String() string {
@@ -53,9 +60,26 @@ func documentation(rw http.ResponseWriter, r *http.Request) {
 	// fmt.Fprintf(rw, "%s", b)
 }
 
+func blocks(rw http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		rw.Header().Add("Content-Type", "application/json")
+		json.NewEncoder(rw).Encode(blockchain.GetBlockchain().AllBlocks())
+	case "POST":
+		// {"data": "my block data"}
+		var addBlockBody AddBlockBody
+		// fmt.Println(addBlockBody)
+		utils.HandleErr(json.NewDecoder(r.Body).Decode(&addBlockBody))
+		// fmt.Println(addBlockBody)
+		blockchain.GetBlockchain().AddBlock(addBlockBody.Message)
+		rw.WriteHeader(http.StatusCreated)
+	}
+}
+
 func main() {
 
 	http.HandleFunc("/", documentation)
+	http.HandleFunc("/blocks", blocks)
 	fmt.Printf("Listening on http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, nil))
 }
