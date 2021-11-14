@@ -23,7 +23,7 @@ func (u url) MarshalText() ([]byte, error) {
 	return []byte(url), nil
 }
 
-// func (u URL) String() string {
+// func (u url) String() string {
 // 	return "hi"
 // }
 
