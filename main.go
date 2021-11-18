@@ -1,6 +1,8 @@
 package main
 
-import "github.com/jhunderdog/nmcoin/cli"
+import (
+	"github.com/jhunderdog/nmcoin/blockchain"
+)
 
 func main() {
 	// go explorer.Start(3000)
@@ -25,5 +27,6 @@ func main() {
 	// 	fmt.Println(portFlag)
 	// 	fmt.Println("Start server")
 	// }
-	cli.Start()
+	// cli.Start()
+	blockchain.Blockchain()
 }
